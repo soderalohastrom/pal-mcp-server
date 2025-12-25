@@ -14,6 +14,7 @@ from .docgen import DocgenTool
 from .listmodels import ListModelsTool
 from .planner import PlannerTool
 from .precommit import PrecommitTool
+from .project_tracker import ProjectTrackerTool
 from .refactor import RefactorTool
 from .secaudit import SecauditTool
 from .testgen import TestGenTool
@@ -40,4 +41,5 @@ __all__ = [
     "TestGenTool",
     "TracerTool",
     "VersionTool",
+    "ProjectTrackerTool",
 ]

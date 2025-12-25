@@ -60,6 +60,7 @@ from tools import (  # noqa: E402
     LookupTool,
     PlannerTool,
     PrecommitTool,
+    ProjectTrackerTool,
     RefactorTool,
     SecauditTool,
     TestGenTool,
@@ -277,6 +278,7 @@ TOOLS = {
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
     "version": VersionTool(),  # Display server version and system information
+    "project_tracker": ProjectTrackerTool(),  # Cross-session context capture and retrieval for baton pass
 }
 TOOLS = filter_disabled_tools(TOOLS)
 
@@ -371,6 +373,11 @@ PROMPT_TEMPLATES = {
         "name": "version",
         "description": "Show server version and system information",
         "template": "Show PAL MCP Server version",
+    },
+    "project_tracker": {
+        "name": "project_tracker",
+        "description": "Capture and retrieve project context for cross-session handoffs",
+        "template": "Track project context with {mode} mode",
     },
 }
 
@@ -757,7 +764,8 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         pass
 
     # Handle thread context reconstruction if continuation_id is present
-    if "continuation_id" in arguments and arguments["continuation_id"]:
+    # Skip for project_tracker - it uses continuation_id as project_id, not conversation thread
+    if "continuation_id" in arguments and arguments["continuation_id"] and name != "project_tracker":
         continuation_id = arguments["continuation_id"]
         logger.debug(f"Resuming conversation thread: {continuation_id}")
         logger.debug(
